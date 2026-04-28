@@ -1,10 +1,12 @@
 # Node modules
 backend/node_modules/
 frontend/node_modules/
+backend-mongo/node_modules/
 
 # Environment files
 backend/.env
 frontend/.env
+backend-mongo/.env
 
 # Build files
 frontend/dist/
