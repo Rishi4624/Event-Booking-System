@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL;
 export default function AddEvent() {
   const [form, setForm] = useState({
     title: "",
@@ -34,7 +35,7 @@ export default function AddEvent() {
 
     try {
       console.log("Submitting event:", form);
-      const res = await axios.post("http://localhost:5000/admin/add-events", form, {
+      const res = await axios.post(`${API_URL}/admin/add-events`, form, {
         withCredentials: true // if you use auth like in AddAdmin
       });
 

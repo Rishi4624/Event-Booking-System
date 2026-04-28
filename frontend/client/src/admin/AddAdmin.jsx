@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function AddAdmin() {
   const [form, setForm] = useState({
@@ -28,7 +29,7 @@ export default function AddAdmin() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/admin/create",
+        `${API_URL}/admin/create`,
         form,
         { withCredentials: true }
       );

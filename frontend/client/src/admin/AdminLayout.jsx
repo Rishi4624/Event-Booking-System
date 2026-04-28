@@ -3,19 +3,22 @@ import { motion } from "framer-motion";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import axios from "axios";
+// import { clearAuthState } from "../../middleware";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function AdminLayout() {
   const navigate = useNavigate();
 
   const handleLogout = async() => {
     // Clear auth token / session
-    // localStorage.removeItem("adminToken"); // adjust according to your auth method
-    
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
 
-    const res = await axios.post('http://localhost:5000/admin/logout', {}, { withCredentials: true });
+    const res = await axios.post(`${API_URL}/admin/logout`, {}, { withCredentials: true });
     if(res.data.success){
+      // clearAuthState();
       // Redirect to login
-      navigate("/admin/login");
+      navigate("/login");
     }else{
       alert("Logout failed. Please try again.");
     }

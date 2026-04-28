@@ -4,6 +4,8 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { Calendar, User, Ticket, IndianRupee, Clock, CheckCircle, XCircle } from "lucide-react";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function BookingManagement() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +14,7 @@ export default function BookingManagement() {
   const loadBookings = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/admin/bookings", {
+      const res = await axios.get(`${API_URL}/admin/bookings`, {
         withCredentials: true, // if using cookie-based auth
       });
       setBookings(res.data);
@@ -39,6 +41,7 @@ export default function BookingManagement() {
       confirmed: <CheckCircle size={16} />,
       pending: <Clock size={16} />,
       cancelled: <XCircle size={16} />,
+      amount: <Tag size={16} />,
     };
 
     const defaultStyle = "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-300";
@@ -164,6 +167,9 @@ export default function BookingManagement() {
                       <td className="px-6 py-5 text-center font-medium text-gray-900 dark:text-gray-100">
                         <div className="flex items-center justify-center gap-1">
                           <IndianRupee size={16} />
+                                                    <Tag size={16} />
+                                                  <Tag size={16} />
+                                                  <Tag size={16} />
                           {booking.total_amount?.toLocaleString("en-IN") || "—"}
                         </div>
                       </td>

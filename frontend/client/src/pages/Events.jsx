@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom"; // ← added
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Calendar, MapPin, ArrowRight, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom"; // ← added
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Events() {
   const [events, setEvents] = useState([]);
@@ -16,8 +18,9 @@ export default function Events() {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("http://localhost:5000/events");
+        const res = await axios.get(`${API_URL}/events`);
         setEvents(res.data);
+        console.log('Fetched events:', res.data);
       } catch (err) {
         setError("Failed to load events. Please try again later.");
       } finally {
@@ -138,8 +141,7 @@ export default function Events() {
                         {event.price ? `₹${event.price}` : "Free"}
                       </div>
 
-                      <a
-                        href={`/event/${event.id}`}
+                      <Link to={`/event/${event.id}`}
                         className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-md hover:shadow-lg group/btn"
                       >
                         View Details
@@ -147,7 +149,7 @@ export default function Events() {
                           size={18}
                           className="group-hover/btn:translate-x-1 transition-transform"
                         />
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </motion.div>

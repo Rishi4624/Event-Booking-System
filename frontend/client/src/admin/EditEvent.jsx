@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Save, ArrowLeft, AlertCircle, CheckCircle } from "lucide-react";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function EditEvent() {
   const { id } = useParams();
@@ -27,7 +28,7 @@ export default function EditEvent() {
     const fetchEvent = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5000/events/${id}`, {
+        const res = await axios.get(`${API_URL}/events/${id}`, {
           withCredentials: true,
         });
         // Convert date to datetime-local format if needed
@@ -69,7 +70,7 @@ export default function EditEvent() {
     setMessage({ text: "", type: "success" });
 
     try {
-      await axios.put(`http://localhost:5000/events/${id}`, form, {
+      await axios.put(`${API_URL}/events/${id}`, form, {
         withCredentials: true,
       });
 

@@ -4,6 +4,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function EventList() {
   const [events, setEvents] = useState([]);
@@ -14,7 +15,7 @@ export default function EventList() {
     try {
       setLoading(true);
       setError(null);
-      const res = await axios.get("http://localhost:5000/events", {
+      const res = await axios.get(`${API_URL}/events`, {
         withCredentials: true, // if authentication is needed
       });
       setEvents(res.data);
@@ -33,7 +34,7 @@ export default function EventList() {
     if (!window.confirm("Are you sure you want to delete this event?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/events/${id}`, {
+      await axios.delete(`${API_URL}/events/${id}`, {
         withCredentials: true,
       });
       setEvents(events.filter((event) => event.id !== id));

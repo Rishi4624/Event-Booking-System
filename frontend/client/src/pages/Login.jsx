@@ -3,8 +3,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import {Link} from "react-router-dom";
+// import { setAuthState } from "../../middleware";
+const API_URL = import.meta.env.VITE_API_URL;
 
-export default function AdminLogin() {
+
+export default function Login() {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,9 +19,10 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
 
+    console.log(API_URL);
+
     try {
-      const res = await axios.post(
-        "http://localhost:5000/admin/login",
+      const res = await axios.post(`${API_URL}/admin/login`,
         {
           email,
           password: pass,
@@ -26,10 +31,15 @@ export default function AdminLogin() {
       );
 
       if (res.data.success) {
-        localStorage.setItem("adminToken", res.data.adminToken);
-        navigate("/admin/events");
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("role", res.data.message);
+
+        if(res.data.message==="admin")
+          navigate("/admin/events");
+        else
+          navigate("/events");
       } else {
-        setError(res.data.message || "Login failed");
+          setError(res.data.message || "Login failed");
       }
     } catch (err) {
       setError(
@@ -160,9 +170,10 @@ export default function AdminLogin() {
               </motion.button>
             </div>
 
-            {/* Footer hint */}
+             {/* Footer */}
             <p className="text-center text-indigo-300/70 text-sm mt-10">
-              This is a protected area • Unauthorized access is strictly prohibited
+              Don't have an account?{" "}
+              <Link to="/signup" className="text-indigo-300 hover:text-white font-medium">Sign up</Link>
             </p>
           </div>
         </motion.div>

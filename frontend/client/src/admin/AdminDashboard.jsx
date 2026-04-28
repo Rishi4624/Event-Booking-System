@@ -2,19 +2,21 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Chart from "chart.js/auto";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({});
   const [chart, setChart] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/admin/stats").then(res => {
+    axios.get(
+      `${API_URL}/admin/stats`).then(res => {
       setStats(res.data);
     });
   }, []);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/admin/event-sales").then(res => {
+    axios.get(`${API_URL}/admin/event-sales`).then(res => {
       const ctx = document.getElementById("salesChart");
       new Chart(ctx, {
         type: "bar",

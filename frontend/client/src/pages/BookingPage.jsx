@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function BookingPage() {
   const { id } = useParams(); // event ID from URL
@@ -15,7 +16,7 @@ export default function BookingPage() {
 
   // Fetch event details
   useEffect(() => {
-    axios.get(`http://localhost:5000/events/${id}`).then((res) => {
+    axios.get(`${API_URL}/events/${id}`).then((res) => {
       setEvent(res.data);
     });
   }, [id]);
@@ -43,7 +44,7 @@ export default function BookingPage() {
     };
 
     try {
-      const res = await axios.post("http://localhost:5000/bookings", bookingData);
+      const res = await axios.post(`${API_URL}/bookings`, bookingData);
       alert(res.data.message);
     } catch (err) {
       console.log(err);
