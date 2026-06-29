@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
       expiresIn: "1d",
     });
   
-    res.cookie("Token", token, { httpOnly: true });
+    res.cookie("Token", token, { httpOnly: true, sameSite: "none", secure: true });
     return res.json({ success: true, message:"admin" });
   }
 
@@ -43,7 +43,7 @@ router.post("/", async (req, res) => {
       expiresIn: "1d",
     });
   
-    res.cookie("Token", token, { httpOnly: true });
+    res.cookie("Token", token, { httpOnly: true, sameSite: "none", secure: true });
     return res.json({ success: true, message:"user" });
    
   }
