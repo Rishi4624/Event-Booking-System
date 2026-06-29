@@ -23,12 +23,12 @@ router.post("/", async (req, res) => {
     if (!match)
       return res.json({ success: false, message: "Invalid Password" });
     
-    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: admin._id, role: "admin" }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
   
     res.cookie("Token", token, { httpOnly: true });
-    return res.json({ success: true, token, message:"admin" });
+    return res.json({ success: true, message:"admin" });
   }
 
   else if(user){
@@ -39,13 +39,13 @@ router.post("/", async (req, res) => {
       console.log("User login attempt 3");
       return res.json({ success: false, message: "Invalid Password" });
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, role: "user" }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
   
     res.cookie("Token", token, { httpOnly: true });
-    res.json({ success: true, token, message:"user" });
-    return;
+    return res.json({ success: true, message:"user" });
+   
   }
 
   return res.json({ success: false, message: "Invalid Email" });

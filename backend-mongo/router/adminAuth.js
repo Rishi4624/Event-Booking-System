@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = function adminAuth(req, res, next) {
-  const token = req.cookies.adminToken;
+function adminAuth(req, res, next) {
+  const token = req.cookies.Token;
   if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
@@ -11,6 +11,9 @@ module.exports = function adminAuth(req, res, next) {
   } catch (err) {
     return res.status(401).json({ message: "Token Invalid" });
   }
-};
+
+}
+
+module.exports = adminAuth; 
 
 

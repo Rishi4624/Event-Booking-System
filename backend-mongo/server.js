@@ -5,11 +5,26 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
+
 const app = express();
+
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
+
+const allowedOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(",") : [];
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps, curl, or Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+  credentials: true
+}));
 
 app.use("/admin/create", require("./router/adminCreate"));
 app.use("/admin/login", require("./router/admin"));
