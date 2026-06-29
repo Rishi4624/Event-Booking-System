@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { Calendar, User, Ticket, IndianRupee, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Calendar, User, Ticket, IndianRupee, Clock, CheckCircle, XCircle, Tag } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,7 +15,10 @@ export default function BookingManagement() {
     try {
       setLoading(true);
       const res = await axios.get(`${API_URL}/admin/bookings`, {
-        withCredentials: true, // if using cookie-based auth
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
       });
       setBookings(res.data);
     } catch (err) {

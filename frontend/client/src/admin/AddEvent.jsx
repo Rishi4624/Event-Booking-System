@@ -39,7 +39,10 @@ export default function AddEvent() {
         `${API_URL}/admin/add-events`,
          form,
           {
-        withCredentials: true // if you use auth like in AddAdmin
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
       }
     );
 
