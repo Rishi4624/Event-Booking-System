@@ -58,6 +58,14 @@ export default function BookingManagement() {
     );
   };
 
+  // Group bookings by event
+  const groupedBookings = bookings.reduce((acc, booking) => {
+    const eventName = booking.event?.title || "Unknown Event";
+    if (!acc[eventName]) acc[eventName] = [];
+    acc[eventName].push(booking);
+    return acc;
+  }, {});
+
   return (
     <div className="min-h-[80vh] py-6 md:py-10">
       <motion.div
@@ -73,7 +81,7 @@ export default function BookingManagement() {
               Manage Bookings
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              View and monitor all customer bookings across events
+              View and monitor all customer bookings grouped by events
             </p>
           </div>
 
@@ -104,145 +112,135 @@ export default function BookingManagement() {
             </p>
           </div>
         ) : (
-          /* Booking Table / Cards */
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 rounded-2xl shadow-2xl shadow-indigo-500/10 overflow-hidden">
-            {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-gradient-to-r from-indigo-600/10 to-purple-600/10 border-b border-gray-200 dark:border-gray-700">
-                    <th className="px-6 py-5 text-left font-semibold text-gray-700 dark:text-gray-300">
-                      Customer
-                    </th>
-                    <th className="px-6 py-5 text-left font-semibold text-gray-700 dark:text-gray-300">
-                      Event
-                    </th>
-                    <th className="px-6 py-5 text-center font-semibold text-gray-700 dark:text-gray-300">
-                      Tickets
-                    </th>
-                    <th className="px-6 py-5 text-center font-semibold text-gray-700 dark:text-gray-300">
-                      Amount
-                    </th>
-                    <th className="px-6 py-5 text-center font-semibold text-gray-700 dark:text-gray-300">
-                      Booking Date
-                    </th>
-                    <th className="px-6 py-5 text-center font-semibold text-gray-700 dark:text-gray-300">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bookings.map((booking, index) => (
-                    <motion.tr
-                      key={booking.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="border-b border-gray-100 dark:border-gray-700 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-colors"
+          /* Bookings Grouped by Event */
+          <div className="space-y-12">
+            {Object.entries(groupedBookings).map(([eventName, eventBookings], idx) => (
+              <motion.div 
+                key={eventName}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 rounded-2xl shadow-2xl shadow-indigo-500/10 overflow-hidden"
+              >
+                <div className="bg-indigo-600 dark:bg-indigo-900 px-6 py-4 flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-white">{eventName}</h2>
+                  <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    {eventBookings.length} Bookings
+                  </span>
+                </div>
+
+                {/* Desktop Table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gray-50/50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700">
+                        <th className="px-6 py-5 text-left font-semibold text-gray-700 dark:text-gray-300">
+                          Customer
+                        </th>
+                        <th className="px-6 py-5 text-center font-semibold text-gray-700 dark:text-gray-300">
+                          Tickets
+                        </th>
+                        <th className="px-6 py-5 text-center font-semibold text-gray-700 dark:text-gray-300">
+                          Amount
+                        </th>
+                        <th className="px-6 py-5 text-center font-semibold text-gray-700 dark:text-gray-300">
+                          Booking Date
+                        </th>
+                        <th className="px-6 py-5 text-center font-semibold text-gray-700 dark:text-gray-300">
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {eventBookings.map((booking, index) => (
+                        <tr
+                          key={booking._id}
+                          className="border-b border-gray-100 dark:border-gray-700 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-colors"
+                        >
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                                <User size={20} />
+                              </div>
+                              <div>
+                                <div className="font-medium text-gray-900 dark:text-gray-100">
+                                  {booking.name || "Guest"}
+                                </div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                  {booking.email || "—"}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 text-center">
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-medium">
+                              <Ticket size={16} />
+                              {booking.quantity}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 text-center font-medium text-gray-900 dark:text-gray-100">
+                            <div className="flex items-center justify-center gap-1">
+                              <IndianRupee size={16} />
+                              {booking.total_amount?.toLocaleString("en-IN") || "—"}
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 text-center text-gray-600 dark:text-gray-400">
+                            {new Date(booking.createdAt).toLocaleString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                              hour: "numeric",
+                              minute: "2-digit",
+                            })}
+                          </td>
+                          <td className="px-6 py-5 text-center">
+                            {getStatusBadge(booking.status || 'confirmed')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Cards View */}
+                <div className="md:hidden space-y-4 p-4">
+                  {eventBookings.map((booking) => (
+                    <div
+                      key={booking._id}
+                      className="bg-gray-50/50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-sm"
                     >
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                            <User size={20} />
-                          </div>
-                          <div>
-                            <div className="font-medium text-gray-900 dark:text-gray-100">
-                              {booking.name || "Guest"}
-                            </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {booking.email || "—"}
-                            </div>
-                          </div>
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-gray-100">
+                            {booking.name || "Guest"}
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            {booking.email || "—"}
+                          </p>
                         </div>
-                      </td>
-                      <td className="px-6 py-5 font-medium text-gray-900 dark:text-gray-100">
-                        {booking.title}
-                      </td>
-                      <td className="px-6 py-5 text-center">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-medium">
-                          <Ticket size={16} />
-                          {booking.quantity}
+                        {getStatusBadge(booking.status || 'confirmed')}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-500 dark:text-gray-400">Tickets</p>
+                          <p className="font-medium flex items-center gap-1 mt-1 text-gray-900 dark:text-gray-100">
+                            <Ticket size={16} className="text-indigo-500" /> {booking.quantity}
+                          </p>
                         </div>
-                      </td>
-                      <td className="px-6 py-5 text-center font-medium text-gray-900 dark:text-gray-100">
-                        <div className="flex items-center justify-center gap-1">
-                          <IndianRupee size={16} />
-                                                    <Tag size={16} />
-                                                  <Tag size={16} />
-                                                  <Tag size={16} />
-                          {booking.total_amount?.toLocaleString("en-IN") || "—"}
+                        <div>
+                          <p className="text-gray-500 dark:text-gray-400">Amount</p>
+                          <p className="font-medium flex items-center gap-1 mt-1 text-gray-900 dark:text-gray-100">
+                            <IndianRupee size={16} className="text-green-500" />
+                            {booking.total_amount?.toLocaleString("en-IN") || "—"}
+                          </p>
                         </div>
-                      </td>
-                      <td className="px-6 py-5 text-center text-gray-600 dark:text-gray-400">
-                        {new Date(booking.booking_date).toLocaleString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                          hour: "numeric",
-                          minute: "2-digit",
-                        })}
-                      </td>
-                      <td className="px-6 py-5 text-center">
-                        {getStatusBadge(booking.status)}
-                      </td>
-                    </motion.tr>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile Cards View */}
-            <div className="md:hidden space-y-6 p-6">
-              {bookings.map((booking, index) => (
-                <motion.div
-                  key={booking.id}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.06 }}
-                  className="bg-white/60 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100">
-                        {booking.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {booking.name || "Guest"} • {booking.email || "—"}
-                      </p>
-                    </div>
-                    {getStatusBadge(booking.status)}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                    <div>
-                      <p className="text-gray-500 dark:text-gray-400">Tickets</p>
-                      <p className="font-medium flex items-center gap-1">
-                        <Ticket size={16} /> {booking.quantity}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 dark:text-gray-400">Amount</p>
-                      <p className="font-medium flex items-center gap-1">
-                        <IndianRupee size={16} />
-                        {booking.total_amount?.toLocaleString("en-IN") || "—"}
-                      </p>
-                    </div>
-                    <div className="col-span-2">
-                      <p className="text-gray-500 dark:text-gray-400">Booked on</p>
-                      <p className="font-medium">
-                        {new Date(booking.booking_date).toLocaleString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                          hour: "numeric",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         )}
       </motion.div>

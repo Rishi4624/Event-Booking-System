@@ -30,8 +30,10 @@ function App() {
         <Route path="/events" element={<Events />} />
         <Route path="/event/:id" element={<EventDetail />} />
         <Route path="/success" element={<Success />} />
-        <Route path="/book/event/:id" element={<BookingPage />} />
-        
+
+        <Route element={<PrivateRoute allow={["user"]} />}>
+          <Route path="/book/event/:id" element={<BookingPage />} />
+        </Route>
         <Route element={<PrivateRoute allow={["admin"]} />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="add-event" element={<AddEvent />} />

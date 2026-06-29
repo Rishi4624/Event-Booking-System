@@ -63,43 +63,24 @@ export default function EventDetails() {
     });
   };
 
-  const handleBooking = async () => {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const role = localStorage.getItem("role") || "user";
+  const canBook = isLoggedIn && role === "user";
+
+  const handleBooking = () => {
     if (!event?.available_seats || event.available_seats <= 0) return;
-
-    try {
-      setBookingLoading(true);
-
-      const res = await axios.post(`${API_URL}/events/${id}/book`, {}, {
-        headers: {
-          // Add authorization header if needed
-          // Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.data.success) {
-        setEvent((prev) => ({
-          ...prev,
-          available_seats: prev.available_seats - 1,
-        }));
-
-        setPopup({
-          show: true,
-          message: "🎉 Booking confirmed successfully!",
-          success: true,
-        });
-      } else {
-        throw new Error(res.data.message || "Booking failed");
-      }
-    } catch (err) {
-      console.error("Booking error:", err);
-      setPopup({
-        show: true,
-        message: err?.response?.data?.message || "❌ Booking failed. Please try again.",
-        success: false,
-      });
-    } finally {
-      setBookingLoading(false);
+    
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
     }
+    
+    if (role === "admin") {
+      alert("Admins cannot book tickets.");
+      return;
+    }
+    
+    navigate(`/book/event/${id}`);
   };
 
   if (loading) {
@@ -225,11 +206,11 @@ export default function EventDetails() {
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={handleBooking}
-                  disabled={bookingLoading || !event.available_seats || event.available_seats <= 0}
+                  disabled={bookingLoading || !event.available_seats || event.available_seats <= 0 || (isLoggedIn && role === "admin")}
                   className={`
                     px-12 py-5 rounded-xl font-bold text-lg shadow-xl transition-all duration-300 min-w-[180px]
                     ${
-                      !event.available_seats || event.available_seats <= 0
+                      !event.available_seats || event.available_seats <= 0 || (isLoggedIn && role === "admin")
                         ? "bg-gray-400 cursor-not-allowed text-white"
                         : bookingLoading
                         ? "bg-indigo-400 cursor-wait text-white"
@@ -237,7 +218,11 @@ export default function EventDetails() {
                     }
                   `}
                 >
-                  {bookingLoading
+                  {!isLoggedIn
+                    ? "Login to Book"
+                    : role === "admin"
+                    ? "Admins Cannot Book"
+                    : bookingLoading
                     ? "Booking..."
                     : event.available_seats && event.available_seats > 0
                     ? "Book Now"

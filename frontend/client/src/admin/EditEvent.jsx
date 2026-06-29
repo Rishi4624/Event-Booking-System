@@ -32,10 +32,12 @@ export default function EditEvent() {
           withCredentials: true,
         });
         // Convert date to datetime-local format if needed
-        const eventData = res.data;
+        const eventData = res.data.event;
         if (eventData.date) {
           eventData.date = new Date(eventData.date).toISOString().slice(0, 16);
         }
+        eventData.seats = eventData.available_seats;
+        eventData.image = eventData.img;
         setForm(eventData);
       } catch (err) {
         setMessage({
