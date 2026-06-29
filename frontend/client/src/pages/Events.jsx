@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // ← added
 import axios from "axios";
 import { motion } from "framer-motion";
-import { Calendar, MapPin, ArrowRight, ArrowLeft } from "lucide-react";
+import { Calendar, MapPin, ArrowRight, ArrowLeft, LogOut } from "lucide-react";
 import { Link } from "react-router-dom"; // ← added
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,6 +13,18 @@ export default function Events() {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate(); // ← added
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+  const handleLogout = async () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("role");
+    try {
+      await axios.post(`${API_URL}/admin/logout`, {}, { withCredentials: true });
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+    navigate("/login");
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -57,8 +69,18 @@ export default function Events() {
             <ArrowLeft size={20} />
             <span className="font-medium">Back to Home</span>
           </motion.button>
-      
-
+          {isLoggedIn && (
+            <motion.button
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-5 py-3 bg-red-500/10 dark:bg-red-500/10 backdrop-blur-md border border-red-500/30 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-all shadow-sm hover:shadow-md"
+            >
+              <LogOut size={20} />
+              <span className="font-medium">Logout</span>
+            </motion.button>
+          )}
         </div>
           <div className="text-center flex-1">
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">

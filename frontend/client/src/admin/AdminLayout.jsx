@@ -13,6 +13,7 @@ export default function AdminLayout() {
     // Clear auth token / session
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    localStorage.removeItem("isLoggedIn");
 
     const res = await axios.post(`${API_URL}/admin/logout`, {}, { withCredentials: true });
     if(res.data.success){

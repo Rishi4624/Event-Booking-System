@@ -31,20 +31,23 @@ export default function Login() {
       );
 
       if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("role", res.data.message);
 
-        if(res.data.message==="admin")
+        if(res.data?.message==="admin")
           navigate("/admin/events");
         else
           navigate("/events");
       } else {
-          setError(res.data.message || "Login failed");
+          setError(res.data?.message || "Login failed");
       }
     } catch (err) {
       setError(
         err.response?.data?.message ||
-          "Something went wrong. Please try again."
+        err.message ||
+        err.response?.statusText ||
+        err.statusText ||
+        "Something went wrong. Please try again."
       );
     } finally {
       setLoading(false);

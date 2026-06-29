@@ -1,8 +1,24 @@
   import { motion } from "framer-motion";
-  import { ArrowRight, Calendar, Zap, ShieldCheck, Users, MapPin, LogIn, UserPlus } from "lucide-react";
-  import { Link } from "react-router-dom";
+  import { ArrowRight, Calendar, Zap, ShieldCheck, Users, MapPin, LogIn, UserPlus, LogOut } from "lucide-react";
+  import { Link, useNavigate } from "react-router-dom";
+  import axios from "axios";
+
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   export default function LandingPage() {
+    const navigate = useNavigate();
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+    const handleLogout = async () => {
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("role");
+      try {
+        await axios.post(`${API_URL}/admin/logout`, {}, { withCredentials: true });
+      } catch (err) {
+        console.error("Logout failed", err);
+      }
+      navigate("/login");
+    };
     return (
       <div className="bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50/30 min-h-screen text-gray-900 overflow-x-hidden">
 
@@ -49,22 +65,34 @@
               </Link>
 
               {/* NEW: Login Button */}
-              <Link
-                to="/login" // ← change this path to your actual admin login route
-                className="bg-white/90 backdrop-blur-sm border-2 border-indigo-600/40 text-indigo-700 px-10 py-5 rounded-2xl font-bold text-lg hover:bg-indigo-50 hover:border-indigo-600/60 transition-all duration-300 flex items-center justify-center gap-3 group order-2 sm:order-2"
-              >
-                <LogIn size={20} className="group-hover:scale-110 transition-transform" />
-                Login
-              </Link>
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500/10 backdrop-blur-sm border-2 border-red-600/40 text-red-700 px-10 py-5 rounded-2xl font-bold text-lg hover:bg-red-50 hover:border-red-600/60 transition-all duration-300 flex items-center justify-center gap-3 group order-2 sm:order-2"
+                >
+                  <LogOut size={20} className="group-hover:scale-110 transition-transform" />
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    to="/login" // ← change this path to your actual admin login route
+                    className="bg-white/90 backdrop-blur-sm border-2 border-indigo-600/40 text-indigo-700 px-10 py-5 rounded-2xl font-bold text-lg hover:bg-indigo-50 hover:border-indigo-600/60 transition-all duration-300 flex items-center justify-center gap-3 group order-2 sm:order-2"
+                  >
+                    <LogIn size={20} className="group-hover:scale-110 transition-transform" />
+                    Login
+                  </Link>
 
-              {/* Added: Sign Up Button */}
-            <Link
-              to="/signup"  // ← change to your actual signup route
-              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 flex items-center justify-center gap-3 group order-3 sm:order-3"
-            >
-              <UserPlus size={20} className="group-hover:scale-110 transition-transform" />
-              Sign Up
-            </Link>
+                  {/* Added: Sign Up Button */}
+                  <Link
+                    to="/signup"  // ← change to your actual signup route
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 flex items-center justify-center gap-3 group order-3 sm:order-3"
+                  >
+                    <UserPlus size={20} className="group-hover:scale-110 transition-transform" />
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </motion.div>
           </div>
         </section>
@@ -178,23 +206,27 @@
               </motion.a>
 
               {/* NEW: Login button in CTA section too */}
-              <motion.a
-                href="/login"
-                whileHover={{ scale: 1.05 }}
-                className="inline-block bg-transparent border-2 border-white text-white px-12 py-6 rounded-2xl font-bold text-xl hover:bg-white/10 transition-all duration-300"
-              >
-                Admin Login →
-              </motion.a>
+              {!isLoggedIn && (
+                <>
+                  <motion.a
+                    href="/login"
+                    whileHover={{ scale: 1.05 }}
+                    className="inline-block bg-transparent border-2 border-white text-white px-12 py-6 rounded-2xl font-bold text-xl hover:bg-white/10 transition-all duration-300"
+                  >
+                    Admin Login →
+                  </motion.a>
 
-              {/* Added: Sign Up Button */}
-            <motion.a
-              href="/signup"  // ← change to your actual signup route
-              whileHover={{scale : 1.05}}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 flex items-center justify-center gap-3 group order-3 sm:order-3"
-            >
-              <UserPlus size={20} className="group-hover:scale-110 transition-transform" />
-              Sign Up
-            </motion.a>
+                  {/* Added: Sign Up Button */}
+                  <motion.a
+                    href="/signup"  // ← change to your actual signup route
+                    whileHover={{scale : 1.05}}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 flex items-center justify-center gap-3 group order-3 sm:order-3"
+                  >
+                    <UserPlus size={20} className="group-hover:scale-110 transition-transform" />
+                    Sign Up
+                  </motion.a>
+                </>
+              )}
 
 
 
@@ -259,24 +291,27 @@
               </motion.a>
 
               {/* Extra Login option in final CTA */}
-              <motion.a
-                href="/login"
-                whileHover={{ scale: 1.05 }}
-                className="inline-block bg-transparent border-2 border-white/70 text-white px-12 py-6 rounded-2xl font-bold text-xl hover:bg-white/10 transition-all duration-300"
-              >
-                Admin Login →
-              </motion.a>
+              {!isLoggedIn && (
+                <>
+                  <motion.a
+                    href="/login"
+                    whileHover={{ scale: 1.05 }}
+                    className="inline-block bg-transparent border-2 border-white/70 text-white px-12 py-6 rounded-2xl font-bold text-xl hover:bg-white/10 transition-all duration-300"
+                  >
+                    Admin Login →
+                  </motion.a>
 
-
-                {/* Added: Sign Up Button */}
-            <motion.a
-              href="/signup"  // ← change to your actual signup route
-              whileHover={{scale : 1.05}}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 flex items-center justify-center gap-3 group order-3 sm:order-3"
-            >
-              <UserPlus size={20} className="group-hover:scale-110 transition-transform" />
-              Sign Up
-            </motion.a>
+                  {/* Added: Sign Up Button */}
+                  <motion.a
+                    href="/signup"  // ← change to your actual signup route
+                    whileHover={{scale : 1.05}}
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 flex items-center justify-center gap-3 group order-3 sm:order-3"
+                  >
+                    <UserPlus size={20} className="group-hover:scale-110 transition-transform" />
+                    Sign Up
+                  </motion.a>
+                </>
+              )}
 
 
 

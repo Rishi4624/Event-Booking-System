@@ -35,9 +35,13 @@ export default function AddEvent() {
 
     try {
       console.log("Submitting event:", form);
-      const res = await axios.post(`${API_URL}/admin/add-events`, form, {
+      const res = await axios.post(
+        `${API_URL}/admin/add-events`,
+         form,
+          {
         withCredentials: true // if you use auth like in AddAdmin
-      });
+      }
+    );
 
       if (!res.data.success) {
         throw new Error(res.data.message || "Failed to create event");

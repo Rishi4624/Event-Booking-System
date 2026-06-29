@@ -5,9 +5,9 @@ import { Navigate, Outlet } from "react-router-dom";
 
 const getCurrentUser = () => {
   // Replace with your auth logic, e.g., check localStorage or context
-  const token = localStorage.getItem('token');
+  const isLoggedIn = localStorage.getItem('isLoggedIn');
   const role = localStorage.getItem('role');
-  if (token) {
+  if (isLoggedIn === 'true') {
     // Decode token or fetch user info
     return { role: role || 'user' }; // Fetch role from localStorage
   }
@@ -37,7 +37,7 @@ export const PublicRoute = () => {
   const user = getCurrentUser();
 
   if (user) {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to={user.role === 'admin' ? "/admin/events" : "/events"} replace />;
   }
 
   return <Outlet />;
