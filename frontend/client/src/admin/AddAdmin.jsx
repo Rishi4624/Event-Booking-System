@@ -28,10 +28,14 @@ export default function AddAdmin() {
     setMessage({ text: "", type: "success" });
 
     try {
+      const token = localStorage.getItem("token");
       const res = await axios.post(
         `${API_URL}/admin/create`,
         form,
-        { withCredentials: true }
+        { 
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true 
+        }
       );
 
       if (res.data.success) {

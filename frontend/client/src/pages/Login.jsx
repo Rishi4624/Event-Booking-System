@@ -33,6 +33,7 @@ export default function Login() {
       if (res.data.success) {
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("role", res.data.message);
+        localStorage.setItem("token", res.data.token);
 
         if(res.data?.message==="admin")
           navigate("/admin/events");
