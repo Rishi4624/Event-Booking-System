@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
     });
   
     res.cookie("Token", token, { httpOnly: true, sameSite: "none", secure: true });
-    return res.json({ success: true, message:"admin" });
+    return res.json({ success: true, message:"admin", token });
   }
 
   else if(user){
@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
     });
   
     res.cookie("Token", token, { httpOnly: true, sameSite: "none", secure: true });
-    return res.json({ success: true, message:"user" });
+    return res.json({ success: true, message:"user", token });
    
   }
 
