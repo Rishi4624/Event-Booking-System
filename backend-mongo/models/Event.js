@@ -20,7 +20,7 @@ const eventSchema = new mongoose.Schema(
  * Auto increment before save
  */
 eventSchema.pre("save", async function () {
-  if (this.id) return next(); // already set
+  if (this.id) return; // already set
 
   const counter = await Counter.findByIdAndUpdate(
     { _id: "eventId" },
@@ -29,7 +29,6 @@ eventSchema.pre("save", async function () {
   );
 
   this.id = counter.seq;
-  // next();
 });
 
 module.exports = mongoose.model("Event", eventSchema);

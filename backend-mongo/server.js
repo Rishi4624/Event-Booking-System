@@ -4,6 +4,7 @@ require("./db/mongo");
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const mongoose = require("mongoose");
 
 
 const app = express();
@@ -90,30 +91,90 @@ app.get("/events/:id", async (req, res) => {
   }
 });
 
+// PUT /events/:id
+app.put("/events/:id", require("./router/adminAuth"), async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { title, description, location, date, seats, price, image } = req.body;
+    
+    // Find event and update
+    let event;
+    if (!isNaN(id)) {
+      event = await Event.findOneAndUpdate({ id: Number(id) }, {
+        title,
+        description,
+        location,
+        date,
+        available_seats: seats,
+        price,
+        img: image
+      }, { new: true });
+    } else {
+      event = await Event.findByIdAndUpdate(id, {
+        title,
+        description,
+        location,
+        date,
+        available_seats: seats,
+        price,
+        img: image
+      }, { new: true });
+    }
+
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+
+    res.json({ success: true, message: "Event updated successfully", event });
+  } catch (error) {
+    console.error("Error updating event:", error);
+    res.status(500).json({ success: false, message: "Server error while updating event", error: error.message });
+  }
+});
+
 
 
 
 app.post("/bookings", async (req, res) => {
-  const { event_id, name, email, mobile, quantity, total_amount } = req.body;
+  try {
+    const { event_id, name, email, mobile, quantity, total_amount } = req.body;
 
-  const event = await Event.findById(event_id);
-  if (!event || event.available_seats < quantity)
-    return res.status(400).json({ message: "Seats not available" });
+    let event;
+    if (mongoose.Types.ObjectId.isValid(event_id)) {
+      event = await Event.findById(event_id);
+    } else {
+      event = await Event.findOne({ id: Number(event_id) });
+    }
 
-  await Booking.create({
-    event: event_id,
-    name,
-    email,
-    mobile,
-    quantity,
-    total_amount,
-  });
+    if (!event || event.available_seats < quantity)
+      return res.status(400).json({ message: "Seats not available or Event not found" });
 
-  event.available_seats -= quantity;
-  await event.save();
+    const booking = await Booking.create({
+      event: event._id,
+      name,
+      email,
+      mobile,
+      quantity,
+      total_amount,
+    });
 
-  res.json({ message: "Booking successful!" });
+    event.available_seats -= quantity;
+    await event.save();
+
+    res.json({ message: "Booking successful!", booking_id: booking._id });
+  } catch (err) {
+    console.error("Booking Error: ", err);
+    res.status(500).json({ message: "Internal Server Error", error: err.message });
+  }
 });
 
+app.get("/admin/bookings", require("./router/adminAuth"), async (req, res) => {
+  try {
+    const bookings = await Booking.find().populate("event", "title date");
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch bookings", error: error.message });
+  }
+});
 
 app.listen(5000, () => console.log("Server running on port 5000"));
