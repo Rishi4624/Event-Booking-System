@@ -13,6 +13,9 @@ export default function AddAdmin() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "success" });
 
+  const adminEmail = localStorage.getItem("adminEmail");
+  const isDummyAdmin = adminEmail === "dummyAdmin@gmail.com";
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setMessage({ text: "", type: "success" }); // clear message on change
@@ -119,15 +122,16 @@ export default function AddAdmin() {
                   }
                   value={form[field]}
                   onChange={handleChange}
+                  disabled={isDummyAdmin}
                   whileFocus="focus"
                   variants={inputVariants}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="w-full px-5 py-4 rounded-xl bg-white/60 dark:bg-gray-900/60 
+                  className={`w-full px-5 py-4 rounded-xl bg-white/60 dark:bg-gray-900/60 
                            border border-gray-300 dark:border-gray-600 
                            focus:border-indigo-500 focus:ring-0 
                            text-gray-900 dark:text-gray-100 
                            placeholder-gray-500 dark:placeholder-gray-500
-                           transition-all duration-300"
+                           transition-all duration-300 ${isDummyAdmin ? "opacity-50 cursor-not-allowed" : ""}`}
                 />
               </motion.div>
             ))}
@@ -135,16 +139,16 @@ export default function AddAdmin() {
 
           {/* Submit Button */}
           <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={!isDummyAdmin ? { scale: 1.03 } : {}}
+            whileTap={!isDummyAdmin ? { scale: 0.97 } : {}}
             onClick={submitAdmin}
-            disabled={isLoading}
+            disabled={isLoading || isDummyAdmin}
             className={`
               mt-8 w-full py-4 px-6 rounded-xl font-semibold text-lg
               transition-all duration-300 shadow-lg
               ${
-                isLoading
-                  ? "bg-indigo-400 cursor-not-allowed"
+                isLoading || isDummyAdmin
+                  ? "bg-indigo-400 cursor-not-allowed opacity-60"
                   : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
               }
               text-white

@@ -11,6 +11,8 @@ export default function EventList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigator = useNavigate();
+  const adminEmail = localStorage.getItem("adminEmail");
+  const isDummyAdmin = adminEmail === "dummyAdmin@gmail.com";
   const loadEvents = async () => {
     try {
       setLoading(true);
@@ -164,24 +166,28 @@ export default function EventList() {
                       </td>
                       <td className="px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-3">
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => (window.location.href = `/admin/edit-event/${event.id}`)}
-                            className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
-                            title="Edit"
-                          >
-                            <Edit size={18} />
-                          </motion.button>
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => deleteEvent(event.id)}
-                            className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 size={18} />
-                          </motion.button>
+                          {!isDummyAdmin && (
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => (window.location.href = `/admin/edit-event/${event.id}`)}
+                              className="p-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                              title="Edit"
+                            >
+                              <Edit size={18} />
+                            </motion.button>
+                          )}
+                          {!isDummyAdmin && (
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => deleteEvent(event.id)}
+                              className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 size={18} />
+                            </motion.button>
+                          )}
                         </div>
                       </td>
                     </motion.tr>
@@ -223,18 +229,22 @@ export default function EventList() {
                   </div>
 
                   <div className="flex gap-3">
-                    <button
-                      onClick={() => (window.location.href = `/admin/edit-event/${event.id}`)}
-                      className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                    >
-                      <Edit size={16} /> Edit
-                    </button>
-                    <button
-                      onClick={() => deleteEvent(event.id)}
-                      className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
-                    >
-                      <Trash2 size={16} /> Delete
-                    </button>
+                    {!isDummyAdmin && (
+                      <button
+                        onClick={() => (window.location.href = `/admin/edit-event/${event.id}`)}
+                        className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Edit size={16} /> Edit
+                      </button>
+                    )}
+                    {!isDummyAdmin && (
+                      <button
+                        onClick={() => deleteEvent(event.id)}
+                        className="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Trash2 size={16} /> Delete
+                      </button>
+                    )}
                   </div>
                 </motion.div>
               ))}
