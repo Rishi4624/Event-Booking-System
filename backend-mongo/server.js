@@ -94,6 +94,9 @@ app.get("/events/:id", async (req, res) => {
 // PUT /events/:id
 app.put("/events/:id", require("./router/adminAuth"), async (req, res) => {
   try {
+    if (req.admin.email === "dummyAdmin@gmail.com") {
+      return res.status(403).json({ success: false, message: "Dummy admin cannot update events" });
+    }
     const id = req.params.id;
     const { title, description, location, date, seats, price, image } = req.body;
     
@@ -132,6 +135,28 @@ app.put("/events/:id", require("./router/adminAuth"), async (req, res) => {
   }
 });
 
+// DELETE /events/:id
+app.delete("/events/:id", require("./router/adminAuth"), async (req, res) => {
+  try {
+    if (req.admin.email === "dummyAdmin@gmail.com") {
+      return res.status(403).json({ success: false, message: "Dummy admin cannot delete events" });
+    }
+    const id = req.params.id;
+    let event;
+    if (!isNaN(id)) {
+      event = await Event.findOneAndDelete({ id: Number(id) });
+    } else {
+      event = await Event.findByIdAndDelete(id);
+    }
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    res.json({ success: true, message: "Event deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    res.status(500).json({ success: false, message: "Server error while deleting event" });
+  }
+});
 
 
 

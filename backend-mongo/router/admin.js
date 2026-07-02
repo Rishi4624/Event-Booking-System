@@ -23,12 +23,12 @@ router.post("/", async (req, res) => {
     if (!match)
       return res.json({ success: false, message: "Invalid Password" });
     
-    const token = jwt.sign({ id: admin._id, role: "admin" }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: admin._id, email: admin.email, role: "admin" }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
   
     res.cookie("Token", token, { httpOnly: true, sameSite: "none", secure: true });
-    return res.json({ success: true, message:"admin", token });
+    return res.json({ success: true, message:"admin", token, email: admin.email });
   }
 
   else if(user){
